@@ -1,1323 +1,318 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Personal Life Dashboard</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Personal Life Dashboard</h1>
+        <p>Manage your tasks, time, and finances</p>
+      </div>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
+      <nav class="nav">
+        <button onclick="showSection('dashboard')" class="active">
+          Dashboard
+        </button>
+        <button onclick="showSection('tasks')">Tasks</button>
+        <button onclick="showSection('time')">Time</button>
+        <button onclick="showSection('money')">Money</button>
+        <button onclick="showSection('habits')">Habits</button>
+        <button onclick="showSection('notes')">Notes</button>
+      </nav>
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+      <!-- Dashboard Section -->
+      <div id="dashboard" class="section active">
+        <h2>Dashboard Overview</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="totalTasks">0</div>
+            <div class="stat-label">Total Tasks</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="completedTasks">0</div>
+            <div class="stat-label">Completed Tasks</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="monthlyIncome">$0</div>
+            <div class="stat-label">Monthly Income</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="monthlyExpenses">$0</div>
+            <div class="stat-label">Monthly Expenses</div>
+          </div>
+        </div>
 
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
-        }
+        <div class="dashboard-grid">
+          <div class="dashboard-card">
+            <h3>Today's Tasks</h3>
+            <div id="todayTasks">No tasks for today</div>
+          </div>
+          <div class="dashboard-card">
+            <h3>Upcoming Deadlines</h3>
+            <div id="upcomingDeadlines">No upcoming deadlines</div>
+          </div>
+          <div class="dashboard-card">
+            <h3>Quick Pomodoro</h3>
+            <div class="timer-display" id="dashboardTimer">25:00</div>
+            <button class="btn btn-small" onclick="startQuickPomodoro()">
+              Start 25min Focus
+            </button>
+          </div>
+        </div>
+      </div>
 
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
+      <!-- Tasks Section -->
+      <div id="tasks" class="section">
+        <h2>Task Management</h2>
 
-        .nav {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
+        <div class="form-group">
+          <label>Add New Task</label>
+          <input type="text" id="taskTitle" placeholder="Task description" />
+        </div>
 
-        .nav button {
-            background: rgba(255,255,255,0.2);
-            border: 2px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
+        <div
+          style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px"
+        >
+          <div class="form-group" style="flex: 1; min-width: 200px">
+            <label>Priority</label>
+            <select id="taskPriority">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex: 1; min-width: 200px">
+            <label>Category</label>
+            <select id="taskCategory">
+              <option value="personal">Personal</option>
+              <option value="work">Work</option>
+              <option value="study">Study</option>
+              <option value="errands">Errands</option>
+              <option value="groceries">Groceries</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex: 1; min-width: 200px">
+            <label>Due Date</label>
+            <input type="date" id="taskDueDate" />
+          </div>
+        </div>
 
-        .nav button:hover, .nav button.active {
-            background: rgba(255,255,255,0.3);
-            border-color: rgba(255,255,255,0.5);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
+        <button class="btn" onclick="addTask()">Add Task</button>
 
-        .section {
-            display: none;
-            background: rgba(255,255,255,0.95);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
+        <div class="filter-section">
+          <label>Filter by:</label>
+          <select id="filterCategory" onchange="filterTasks()">
+            <option value="all">All Categories</option>
+            <option value="personal">Personal</option>
+            <option value="work">Work</option>
+            <option value="study">Study</option>
+            <option value="errands">Errands</option>
+            <option value="groceries">Groceries</option>
+          </select>
+          <select id="filterPriority" onchange="filterTasks()">
+            <option value="all">All Priorities</option>
+            <option value="high">High Priority</option>
+            <option value="medium">Medium Priority</option>
+            <option value="low">Low Priority</option>
+          </select>
+          <select id="filterStatus" onchange="filterTasks()">
+            <option value="all">All Tasks</option>
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
 
-        .section.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
+        <div id="tasksList"></div>
+      </div>
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+      <!-- Time Management Section -->
+      <div id="time" class="section">
+        <h2>Time Management</h2>
 
-        .section h2 {
-            color: #4a5568;
-            margin-bottom: 20px;
-            font-size: 1.8rem;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
-        }
+        <div class="pomodoro-timer">
+          <h3>Pomodoro Timer</h3>
+          <div class="timer-display" id="pomodoroDisplay">25:00</div>
+          <div class="timer-controls">
+            <button class="btn" onclick="startPomodoro()">Start</button>
+            <button class="btn" onclick="pausePomodoro()">Pause</button>
+            <button class="btn" onclick="resetPomodoro()">Reset</button>
+            <button class="btn btn-small" onclick="setWorkTimer()">
+              Work (25min)
+            </button>
+            <button class="btn btn-small" onclick="setBreakTimer()">
+              Break (5min)
+            </button>
+          </div>
+        </div>
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+        <div style="margin-top: 30px">
+          <h3>Simple Calendar</h3>
+          <div style="text-align: center; margin-bottom: 20px">
+            <button class="btn btn-small" onclick="previousMonth()">
+              &lt; Previous
+            </button>
+            <span
+              id="currentMonth"
+              style="margin: 0 20px; font-weight: bold"
+            ></span>
+            <button class="btn btn-small" onclick="nextMonth()">
+              Next &gt;
+            </button>
+          </div>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(7, 1fr);
+              gap: 5px;
+              margin-bottom: 10px;
+              font-weight: bold;
+              text-align: center;
+            "
+          >
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+          </div>
+          <div class="calendar-grid" id="calendarGrid"></div>
+        </div>
+      </div>
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #4a5568;
-        }
+      <!-- Money Management Section -->
+      <div id="money" class="section">
+        <h2>Money Management</h2>
 
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-        }
-
-        .btn-small {
-            padding: 6px 12px;
-            font-size: 0.8rem;
-        }
-
-        .task-item, .expense-item, .income-item {
-            background: #f7fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .task-item:hover, .expense-item:hover, .income-item:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .task-item.completed {
-            opacity: 0.6;
-            text-decoration: line-through;
-        }
-
-        .task-item.overdue {
-            border-color: #f56565;
-            background: #fed7d7;
-        }
-
-        .priority-high {
-            border-left: 5px solid #f56565;
-        }
-
-        .priority-medium {
-            border-left: 5px solid #ed8936;
-        }
-
-        .priority-low {
-            border-left: 5px solid #48bb78;
-        }
-
-        .task-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .task-title {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: #2d3748;
-        }
-
-        .task-meta {
-            font-size: 0.9rem;
-            color: #718096;
-            margin-bottom: 10px;
-        }
-
-        .task-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .filter-section {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .filter-section select {
-            padding: 8px 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        .pomodoro-timer {
-            text-align: center;
-            background: #f7fafc;
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-        }
-
-        .timer-display {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 20px;
-            font-family: 'Courier New', monospace;
-        }
-
-        .timer-controls {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .calendar-day:hover {
-            background: #e2e8f0;
-        }
-
-        .calendar-day.has-tasks {
-            background: #667eea;
-            color: white;
-        }
-
-        .calendar-day.today {
-            background: #48bb78;
-            color: white;
-            font-weight: bold;
-        }
-
-        .habit-tracker {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .habit-item {
-            background: #f7fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 15px;
-        }
-
-        .habit-name {
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #2d3748;
-        }
-
-        .habit-days {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-
-        .habit-day {
-            width: 30px;
-            height: 30px;
-            border: 2px solid #e2e8f0;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.3s ease;
-        }
-
-        .habit-day.completed {
-            background: #48bb78;
-            border-color: #48bb78;
-            color: white;
-        }
-
-        .notes-area {
-            min-height: 200px;
-            resize: vertical;
-        }
-
-        .budget-progress {
-            background: #e2e8f0;
-            border-radius: 10px;
-            height: 20px;
-            margin-top: 10px;
-            overflow: hidden;
-        }
-
-        .budget-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-            transition: width 0.3s ease;
-        }
-
-        .budget-fill.over-budget {
-            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-        }
-
-        .dashboard-grid {
+        <div
+          style="
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .dashboard-card {
-            background: #f7fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 15px;
-            padding: 20px;
-        }
-
-        .dashboard-card h3 {
-            color: #4a5568;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-        }
-
-        .quick-task {
-            padding: 8px 12px;
-            background: #e2e8f0;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .nav {
-                gap: 10px;
-            }
-            
-            .nav button {
-                padding: 10px 16px;
-                font-size: 0.9rem;
-            }
-            
-            .section {
-                padding: 20px;
-            }
-            
-            .timer-display {
-                font-size: 2rem;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            }
-            
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Personal Life Dashboard</h1>
-            <p>Manage your tasks, time, and finances</p>
-        </div>
-
-        <nav class="nav">
-            <button onclick="showSection('dashboard')" class="active">Dashboard</button>
-            <button onclick="showSection('tasks')">Tasks</button>
-            <button onclick="showSection('time')">Time</button>
-            <button onclick="showSection('money')">Money</button>
-            <button onclick="showSection('habits')">Habits</button>
-            <button onclick="showSection('notes')">Notes</button>
-        </nav>
-
-        <!-- Dashboard Section -->
-        <div id="dashboard" class="section active">
-            <h2>Dashboard Overview</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value" id="totalTasks">0</div>
-                    <div class="stat-label">Total Tasks</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="completedTasks">0</div>
-                    <div class="stat-label">Completed Tasks</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="monthlyIncome">$0</div>
-                    <div class="stat-label">Monthly Income</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="monthlyExpenses">$0</div>
-                    <div class="stat-label">Monthly Expenses</div>
-                </div>
-            </div>
-
-            <div class="dashboard-grid">
-                <div class="dashboard-card">
-                    <h3>Today's Tasks</h3>
-                    <div id="todayTasks">No tasks for today</div>
-                </div>
-                <div class="dashboard-card">
-                    <h3>Upcoming Deadlines</h3>
-                    <div id="upcomingDeadlines">No upcoming deadlines</div>
-                </div>
-                <div class="dashboard-card">
-                    <h3>Quick Pomodoro</h3>
-                    <div class="timer-display" id="dashboardTimer">25:00</div>
-                    <button class="btn btn-small" onclick="startQuickPomodoro()">Start 25min Focus</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tasks Section -->
-        <div id="tasks" class="section">
-            <h2>Task Management</h2>
-            
+            gap: 30px;
+          "
+        >
+          <!-- Income Section -->
+          <div>
+            <h3>Add Income</h3>
             <div class="form-group">
-                <label>Add New Task</label>
-                <input type="text" id="taskTitle" placeholder="Task description">
+              <label>Source</label>
+              <input
+                type="text"
+                id="incomeSource"
+                placeholder="e.g., Salary, Freelance"
+              />
             </div>
-            
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
-                <div class="form-group" style="flex: 1; min-width: 200px;">
-                    <label>Priority</label>
-                    <select id="taskPriority">
-                        <option value="low">Low</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="high">High</option>
-                    </select>
-                </div>
-                <div class="form-group" style="flex: 1; min-width: 200px;">
-                    <label>Category</label>
-                    <select id="taskCategory">
-                        <option value="personal">Personal</option>
-                        <option value="work">Work</option>
-                        <option value="study">Study</option>
-                        <option value="errands">Errands</option>
-                        <option value="groceries">Groceries</option>
-                    </select>
-                </div>
-                <div class="form-group" style="flex: 1; min-width: 200px;">
-                    <label>Due Date</label>
-                    <input type="date" id="taskDueDate">
-                </div>
-            </div>
-            
-            <button class="btn" onclick="addTask()">Add Task</button>
-            
-            <div class="filter-section">
-                <label>Filter by:</label>
-                <select id="filterCategory" onchange="filterTasks()">
-                    <option value="all">All Categories</option>
-                    <option value="personal">Personal</option>
-                    <option value="work">Work</option>
-                    <option value="study">Study</option>
-                    <option value="errands">Errands</option>
-                    <option value="groceries">Groceries</option>
-                </select>
-                <select id="filterPriority" onchange="filterTasks()">
-                    <option value="all">All Priorities</option>
-                    <option value="high">High Priority</option>
-                    <option value="medium">Medium Priority</option>
-                    <option value="low">Low Priority</option>
-                </select>
-                <select id="filterStatus" onchange="filterTasks()">
-                    <option value="all">All Tasks</option>
-                    <option value="pending">Pending</option>
-                    <option value="completed">Completed</option>
-                </select>
-            </div>
-            
-            <div id="tasksList"></div>
-        </div>
-
-        <!-- Time Management Section -->
-        <div id="time" class="section">
-            <h2>Time Management</h2>
-            
-            <div class="pomodoro-timer">
-                <h3>Pomodoro Timer</h3>
-                <div class="timer-display" id="pomodoroDisplay">25:00</div>
-                <div class="timer-controls">
-                    <button class="btn" onclick="startPomodoro()">Start</button>
-                    <button class="btn" onclick="pausePomodoro()">Pause</button>
-                    <button class="btn" onclick="resetPomodoro()">Reset</button>
-                    <button class="btn btn-small" onclick="setWorkTimer()">Work (25min)</button>
-                    <button class="btn btn-small" onclick="setBreakTimer()">Break (5min)</button>
-                </div>
-            </div>
-
-            <div style="margin-top: 30px;">
-                <h3>Simple Calendar</h3>
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <button class="btn btn-small" onclick="previousMonth()">&lt; Previous</button>
-                    <span id="currentMonth" style="margin: 0 20px; font-weight: bold;"></span>
-                    <button class="btn btn-small" onclick="nextMonth()">Next &gt;</button>
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 10px; font-weight: bold; text-align: center;">
-                    <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-                </div>
-                <div class="calendar-grid" id="calendarGrid"></div>
-            </div>
-        </div>
-
-        <!-- Money Management Section -->
-        <div id="money" class="section">
-            <h2>Money Management</h2>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
-                <!-- Income Section -->
-                <div>
-                    <h3>Add Income</h3>
-                    <div class="form-group">
-                        <label>Source</label>
-                        <input type="text" id="incomeSource" placeholder="e.g., Salary, Freelance">
-                    </div>
-                    <div class="form-group">
-                        <label>Amount</label>
-                        <input type="number" id="incomeAmount" placeholder="0.00" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label>Date</label>
-                        <input type="date" id="incomeDate">
-                    </div>
-                    <button class="btn" onclick="addIncome()">Add Income</button>
-                    
-                    <div id="incomeList" style="margin-top: 20px;"></div>
-                </div>
-
-                <!-- Expense Section -->
-                <div>
-                    <h3>Add Expense</h3>
-                    <div class="form-group">
-                        <label>Description</label>
-                        <input type="text" id="expenseDescription" placeholder="What did you buy?">
-                    </div>
-                    <div class="form-group">
-                        <label>Amount</label>
-                        <input type="number" id="expenseAmount" placeholder="0.00" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label>Category</label>
-                        <select id="expenseCategory">
-                            <option value="rent">Rent/Mortgage</option>
-                            <option value="utilities">Utilities</option>
-                            <option value="groceries">Groceries</option>
-                            <option value="transport">Transport</option>
-                            <option value="entertainment">Entertainment</option>
-                            <option value="healthcare">Healthcare</option>
-                            <option value="education">Education</option>
-                            <option value="personal">Personal Care</option>
-                            <option value="subscriptions">Subscriptions</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Date</label>
-                        <input type="date" id="expenseDate">
-                    </div>
-                    <button class="btn" onclick="addExpense()">Add Expense</button>
-                    
-                    <div id="expenseList" style="margin-top: 20px;"></div>
-                </div>
-            </div>
-
-            <!-- Budget Section -->
-            <div style="margin-top: 40px;">
-                <h3>Monthly Budget</h3>
-                <div id="budgetOverview"></div>
-            </div>
-        </div>
-
-        <!-- Habits Section -->
-        <div id="habits" class="section">
-            <h2>Habit Tracker</h2>
-            
             <div class="form-group">
-                <label>Add New Habit</label>
-                <input type="text" id="habitName" placeholder="e.g., Exercise, Read, Meditate">
+              <label>Amount</label>
+              <input
+                type="number"
+                id="incomeAmount"
+                placeholder="0.00"
+                step="0.01"
+              />
             </div>
-            <button class="btn" onclick="addHabit()">Add Habit</button>
-            
-            <div class="habit-tracker" id="habitsList"></div>
+            <div class="form-group">
+              <label>Date</label>
+              <input type="date" id="incomeDate" />
+            </div>
+            <button class="btn" onclick="addIncome()">Add Income</button>
+
+            <div id="incomeList" style="margin-top: 20px"></div>
+          </div>
+
+          <!-- Expense Section -->
+          <div>
+            <h3>Add Expense</h3>
+            <div class="form-group">
+              <label>Description</label>
+              <input
+                type="text"
+                id="expenseDescription"
+                placeholder="What did you buy?"
+              />
+            </div>
+            <div class="form-group">
+              <label>Amount</label>
+              <input
+                type="number"
+                id="expenseAmount"
+                placeholder="0.00"
+                step="0.01"
+              />
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <select id="expenseCategory">
+                <option value="rent">Rent/Mortgage</option>
+                <option value="utilities">Utilities</option>
+                <option value="groceries">Groceries</option>
+                <option value="transport">Transport</option>
+                <option value="entertainment">Entertainment</option>
+                <option value="healthcare">Healthcare</option>
+                <option value="education">Education</option>
+                <option value="personal">Personal Care</option>
+                <option value="subscriptions">Subscriptions</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Date</label>
+              <input type="date" id="expenseDate" />
+            </div>
+            <button class="btn" onclick="addExpense()">Add Expense</button>
+
+            <div id="expenseList" style="margin-top: 20px"></div>
+          </div>
         </div>
 
-        <!-- Notes Section -->
-        <div id="notes" class="section">
-            <h2>Quick Notes</h2>
-            
-            <div class="form-group">
-                <label>Your Notes</label>
-                <textarea id="notesArea" class="notes-area" placeholder="Jot down your thoughts, ideas, or reminders..."></textarea>
-            </div>
-            <button class="btn" onclick="saveNotes()">Save Notes</button>
+        <!-- Budget Section -->
+        <div style="margin-top: 40px">
+          <h3>Monthly Budget</h3>
+          <div id="budgetOverview"></div>
         </div>
+      </div>
+
+      <!-- Habits Section -->
+      <div id="habits" class="section">
+        <h2>Habit Tracker</h2>
+
+        <div class="form-group">
+          <label>Add New Habit</label>
+          <input
+            type="text"
+            id="habitName"
+            placeholder="e.g., Exercise, Read, Meditate"
+          />
+        </div>
+        <button class="btn" onclick="addHabit()">Add Habit</button>
+
+        <div class="habit-tracker" id="habitsList"></div>
+      </div>
+
+      <!-- Notes Section -->
+      <div id="notes" class="section">
+        <h2>Quick Notes</h2>
+
+        <div class="form-group">
+          <label>Your Notes</label>
+          <textarea
+            id="notesArea"
+            class="notes-area"
+            placeholder="Jot down your thoughts, ideas, or reminders..."
+          ></textarea>
+        </div>
+        <button class="btn" onclick="saveNotes()">Save Notes</button>
+      </div>
     </div>
 
-    <script>
-        // Global variables and state
-        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
-        let income = JSON.parse(localStorage.getItem('income')) || [];
-        let habits = JSON.parse(localStorage.getItem('habits')) || [];
-        let notes = localStorage.getItem('notes') || '';
-        
-        let pomodoroTimer = null;
-        let pomodoroTime = 25 * 60; // 25 minutes in seconds
-        let pomodoroRunning = false;
-        
-        let currentDate = new Date();
+    <footer class="footer">
+      <p>&copy; 2023 Personal Life Dashboard</p>
+    <script src="script.js" defer></script>
 
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set today's date as default for new tasks and expenses
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('taskDueDate').value = today;
-            document.getElementById('expenseDate').value = today;
-            document.getElementById('incomeDate').value = today;
-            
-            // Load saved notes
-            document.getElementById('notesArea').value = notes;
-            
-            // Initialize displays
-            displayTasks();
-            displayExpenses();
-            displayIncome();
-            displayHabits();
-            updateDashboard();
-            generateCalendar();
-            updateBudgetOverview();
-        });
-
-        // Navigation
-        function showSection(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Remove active class from all nav buttons
-            document.querySelectorAll('.nav button').forEach(button => {
-                button.classList.remove('active');
-            });
-            
-            // Show selected section
-            document.getElementById(sectionId).classList.add('active');
-            
-            // Add active class to clicked button
-            event.target.classList.add('active');
-            
-            // Update displays when switching sections
-            if (sectionId === 'dashboard') {
-                updateDashboard();
-            } else if (sectionId === 'time') {
-                generateCalendar();
-            } else if (sectionId === 'money') {
-                updateBudgetOverview();
-            }
-        }
-
-        // Task Management Functions
-        function addTask() {
-            const title = document.getElementById('taskTitle').value.trim();
-            const priority = document.getElementById('taskPriority').value;
-            const category = document.getElementById('taskCategory').value;
-            const dueDate = document.getElementById('taskDueDate').value;
-            
-            if (!title) {
-                alert('Please enter a task description');
-                return;
-            }
-            
-            const task = {
-                id: Date.now(),
-                title: title,
-                priority: priority,
-                category: category,
-                dueDate: dueDate,
-                completed: false,
-                createdAt: new Date().toISOString()
-            };
-            
-            tasks.push(task);
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-            
-            // Clear form
-            document.getElementById('taskTitle').value = '';
-            document.getElementById('taskPriority').value = 'medium';
-            document.getElementById('taskCategory').value = 'personal';
-            
-            displayTasks();
-            updateDashboard();
-        }
-
-        function displayTasks() {
-            const tasksList = document.getElementById('tasksList');
-            const filteredTasks = getFilteredTasks();
-            
-            if (filteredTasks.length === 0) {
-                tasksList.innerHTML = '<p>No tasks found. Add your first task above!</p>';
-                return;
-            }
-            
-            tasksList.innerHTML = filteredTasks.map(task => {
-                const isOverdue = !task.completed && task.dueDate && new Date(task.dueDate) < new Date();
-                const dueDateText = task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No due date';
-                
-                return `
-                    <div class="task-item ${task.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''} priority-${task.priority}">
-                        <div class="task-header">
-                            <div class="task-title">${task.title}</div>
-                            <input type="checkbox" ${task.completed ? 'checked' : ''} 
-                                   onchange="toggleTask(${task.id})" style="transform: scale(1.2);">
-                        </div>
-                        <div class="task-meta">
-                            <span>Priority: ${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}</span> |
-                            <span>Category: ${task.category.charAt(0).toUpperCase() + task.category.slice(1)}</span> |
-                            <span>Due: ${dueDateText}</span>
-                            ${isOverdue ? '<span style="color: #f56565; font-weight: bold;"> - OVERDUE</span>' : ''}
-                        </div>
-                        <div class="task-actions">
-                            <button class="btn btn-small" onclick="editTask(${task.id})">Edit</button>
-                            <button class="btn btn-small btn-danger" onclick="deleteTask(${task.id})">Delete</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function getFilteredTasks() {
-            const categoryFilter = document.getElementById('filterCategory').value;
-            const priorityFilter = document.getElementById('filterPriority').value;
-            const statusFilter = document.getElementById('filterStatus').value;
-            
-            return tasks.filter(task => {
-                const categoryMatch = categoryFilter === 'all' || task.category === categoryFilter;
-                const priorityMatch = priorityFilter === 'all' || task.priority === priorityFilter;
-                const statusMatch = statusFilter === 'all' || 
-                                  (statusFilter === 'completed' && task.completed) ||
-                                  (statusFilter === 'pending' && !task.completed);
-                
-                return categoryMatch && priorityMatch && statusMatch;
-            });
-        }
-
-        function filterTasks() {
-            displayTasks();
-        }
-
-        function toggleTask(taskId) {
-            const task = tasks.find(t => t.id === taskId);
-            if (task) {
-                task.completed = !task.completed;
-                localStorage.setItem('tasks', JSON.stringify(tasks));
-                displayTasks();
-                updateDashboard();
-            }
-        }
-
-        function editTask(taskId) {
-            const task = tasks.find(t => t.id === taskId);
-            if (task) {
-                const newTitle = prompt('Edit task:', task.title);
-                if (newTitle && newTitle.trim()) {
-                    task.title = newTitle.trim();
-                    localStorage.setItem('tasks', JSON.stringify(tasks));
-                    displayTasks();
-                }
-            }
-        }
-
-        function deleteTask(taskId) {
-            if (confirm('Are you sure you want to delete this task?')) {
-                tasks = tasks.filter(t => t.id !== taskId);
-                localStorage.setItem('tasks', JSON.stringify(tasks));
-                displayTasks();
-                updateDashboard();
-            }
-        }
-
-        // Money Management Functions
-        function addIncome() {
-            const source = document.getElementById('incomeSource').value.trim();
-            const amount = parseFloat(document.getElementById('incomeAmount').value);
-            const date = document.getElementById('incomeDate').value;
-            
-            if (!source || !amount || amount <= 0) {
-                alert('Please enter valid income details');
-                return;
-            }
-            
-            const incomeItem = {
-                id: Date.now(),
-                source: source,
-                amount: amount,
-                date: date,
-                createdAt: new Date().toISOString()
-            };
-            
-            income.push(incomeItem);
-            localStorage.setItem('income', JSON.stringify(income));
-            
-            // Clear form
-            document.getElementById('incomeSource').value = '';
-            document.getElementById('incomeAmount').value = '';
-            
-            displayIncome();
-            updateDashboard();
-            updateBudgetOverview();
-        }
-
-        function displayIncome() {
-            const incomeList = document.getElementById('incomeList');
-            
-            if (income.length === 0) {
-                incomeList.innerHTML = '<p>No income recorded yet.</p>';
-                return;
-            }
-            
-            incomeList.innerHTML = income.map(item => `
-                <div class="income-item">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-weight: 600;">${item.source}</div>
-                            <div style="color: #718096; font-size: 0.9rem;">${new Date(item.date).toLocaleDateString()}</div>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span style="font-weight: bold; color: #48bb78;">+${item.amount.toFixed(2)}</span>
-                            <button class="btn btn-small btn-danger" onclick="deleteIncome(${item.id})">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function deleteIncome(incomeId) {
-            if (confirm('Are you sure you want to delete this income entry?')) {
-                income = income.filter(i => i.id !== incomeId);
-                localStorage.setItem('income', JSON.stringify(income));
-                displayIncome();
-                updateDashboard();
-                updateBudgetOverview();
-            }
-        }
-
-        function addExpense() {
-            const description = document.getElementById('expenseDescription').value.trim();
-            const amount = parseFloat(document.getElementById('expenseAmount').value);
-            const category = document.getElementById('expenseCategory').value;
-            const date = document.getElementById('expenseDate').value;
-            
-            if (!description || !amount || amount <= 0) {
-                alert('Please enter valid expense details');
-                return;
-            }
-            
-            const expense = {
-                id: Date.now(),
-                description: description,
-                amount: amount,
-                category: category,
-                date: date,
-                createdAt: new Date().toISOString()
-            };
-            
-            expenses.push(expense);
-            localStorage.setItem('expenses', JSON.stringify(expenses));
-            
-            // Clear form
-            document.getElementById('expenseDescription').value = '';
-            document.getElementById('expenseAmount').value = '';
-            
-            displayExpenses();
-            updateDashboard();
-            updateBudgetOverview();
-        }
-
-        function displayExpenses() {
-            const expenseList = document.getElementById('expenseList');
-            
-            if (expenses.length === 0) {
-                expenseList.innerHTML = '<p>No expenses recorded yet.</p>';
-                return;
-            }
-            
-            expenseList.innerHTML = expenses.map(expense => `
-                <div class="expense-item">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-weight: 600;">${expense.description}</div>
-                            <div style="color: #718096; font-size: 0.9rem;">
-                                ${expense.category.charAt(0).toUpperCase() + expense.category.slice(1)} • 
-                                ${new Date(expense.date).toLocaleDateString()}
-                            </div>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span style="font-weight: bold; color: #f56565;">-${expense.amount.toFixed(2)}</span>
-                            <button class="btn btn-small btn-danger" onclick="deleteExpense(${expense.id})">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function deleteExpense(expenseId) {
-            if (confirm('Are you sure you want to delete this expense?')) {
-                expenses = expenses.filter(e => e.id !== expenseId);
-                localStorage.setItem('expenses', JSON.stringify(expenses));
-                displayExpenses();
-                updateDashboard();
-                updateBudgetOverview();
-            }
-        }
-
-        function updateBudgetOverview() {
-            const budgetOverview = document.getElementById('budgetOverview');
-            const currentMonth = new Date().getMonth();
-            const currentYear = new Date().getFullYear();
-            
-            // Calculate monthly expenses by category
-            const monthlyExpenses = expenses.filter(expense => {
-                const expenseDate = new Date(expense.date);
-                return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
-            });
-            
-            const expensesByCategory = {};
-            monthlyExpenses.forEach(expense => {
-                expensesByCategory[expense.category] = (expensesByCategory[expense.category] || 0) + expense.amount;
-            });
-            
-            // Default budget limits (user can modify these)
-            const budgetLimits = {
-                rent: 1500,
-                utilities: 200,
-                groceries: 400,
-                transport: 150,
-                entertainment: 200,
-                healthcare: 100,
-                education: 100,
-                personal: 100,
-                subscriptions: 50,
-                other: 200
-            };
-            
-            const categories = Object.keys(budgetLimits);
-            
-            budgetOverview.innerHTML = `
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
-                    ${categories.map(category => {
-                        const spent = expensesByCategory[category] || 0;
-                        const budget = budgetLimits[category];
-                        const percentage = Math.min((spent / budget) * 100, 100);
-                        const isOverBudget = spent > budget;
-                        
-                        return `
-                            <div style="background: #f7fafc; padding: 15px; border-radius: 10px; border: 2px solid ${isOverBudget ? '#f56565' : '#e2e8f0'};">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                                    <span style="font-weight: 600; text-transform: capitalize;">${category}</span>
-                                    <span style="color: ${isOverBudget ? '#f56565' : '#4a5568'};">
-                                        ${spent.toFixed(2)} / ${budget.toFixed(2)}
-                                    </span>
-                                </div>
-                                <div class="budget-progress">
-                                    <div class="budget-fill ${isOverBudget ? 'over-budget' : ''}" 
-                                         style="width: ${percentage}%"></div>
-                                </div>
-                                ${isOverBudget ? '<div style="color: #f56565; font-size: 0.8rem; margin-top: 5px;">Over budget!</div>' : ''}
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-            `;
-        }
-
-        // Time Management Functions
-        function startPomodoro() {
-            if (!pomodoroRunning) {
-                pomodoroRunning = true;
-                pomodoroTimer = setInterval(() => {
-                    pomodoroTime--;
-                    updatePomodoroDisplay();
-                    
-                    if (pomodoroTime <= 0) {
-                        clearInterval(pomodoroTimer);
-                        pomodoroRunning = false;
-                        alert('Pomodoro session completed! Time for a break.');
-                        resetPomodoro();
-                    }
-                }, 1000);
-            }
-        }
-
-        function pausePomodoro() {
-            if (pomodoroRunning) {
-                clearInterval(pomodoroTimer);
-                pomodoroRunning = false;
-            }
-        }
-
-        function resetPomodoro() {
-            clearInterval(pomodoroTimer);
-            pomodoroRunning = false;
-            pomodoroTime = 25 * 60;
-            updatePomodoroDisplay();
-        }
-
-        function setWorkTimer() {
-            resetPomodoro();
-            pomodoroTime = 25 * 60;
-            updatePomodoroDisplay();
-        }
-
-        function setBreakTimer() {
-            resetPomodoro();
-            pomodoroTime = 5 * 60;
-            updatePomodoroDisplay();
-        }
-
-        function updatePomodoroDisplay() {
-            const minutes = Math.floor(pomodoroTime / 60);
-            const seconds = pomodoroTime % 60;
-            const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            document.getElementById('pomodoroDisplay').textContent = display;
-            document.getElementById('dashboardTimer').textContent = display;
-        }
-
-        function startQuickPomodoro() {
-            showSection('time');
-            document.querySelector('.nav button[onclick="showSection(\'time\')"]').classList.add('active');
-            startPomodoro();
-        }
-
-        // Calendar Functions
-        function generateCalendar() {
-            const calendarGrid = document.getElementById('calendarGrid');
-            const currentMonthElement = document.getElementById('currentMonth');
-            
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-            
-            currentMonthElement.textContent = new Date(year, month).toLocaleDateString('en-US', { 
-                month: 'long', 
-                year: 'numeric' 
-            });
-            
-            const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month + 1, 0);
-            const startDate = new Date(firstDay);
-            startDate.setDate(startDate.getDate() - firstDay.getDay());
-            
-            const today = new Date();
-            const tasksWithDates = tasks.filter(task => task.dueDate);
-            
-            let html = '';
-            const totalDays = 42; // 6 weeks
-            
-            for (let i = 0; i < totalDays; i++) {
-                const date = new Date(startDate);
-                date.setDate(startDate.getDate() + i);
-                
-                const isCurrentMonth = date.getMonth() === month;
-                const isToday = date.toDateString() === today.toDateString();
-                const hasTasks = tasksWithDates.some(task => 
-                    new Date(task.dueDate).toDateString() === date.toDateString()
-                );
-                
-                const classes = [];
-                if (isToday) classes.push('today');
-                if (hasTasks) classes.push('has-tasks');
-                
-                html += `
-                    <div class="calendar-day ${classes.join(' ')}" 
-                         style="opacity: ${isCurrentMonth ? '1' : '0.3'};">
-                        ${date.getDate()}
-                    </div>
-                `;
-            }
-            
-            calendarGrid.innerHTML = html;
-        }
-
-        function previousMonth() {
-            currentDate.setMonth(currentDate.getMonth() - 1);
-            generateCalendar();
-        }
-
-        function nextMonth() {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            generateCalendar();
-        }
-
-        // Habit Tracking Functions
-        function addHabit() {
-            const habitName = document.getElementById('habitName').value.trim();
-            
-            if (!habitName) {
-                alert('Please enter a habit name');
-                return;
-            }
-            
-            const habit = {
-                id: Date.now(),
-                name: habitName,
-                completedDays: {},
-                createdAt: new Date().toISOString()
-            };
-            
-            habits.push(habit);
-            localStorage.setItem('habits', JSON.stringify(habits));
-            
-            document.getElementById('habitName').value = '';
-            displayHabits();
-        }
-
-        function displayHabits() {
-            const habitsList = document.getElementById('habitsList');
-            
-            if (habits.length === 0) {
-                habitsList.innerHTML = '<p>No habits tracked yet. Add your first habit above!</p>';
-                return;
-            }
-            
-            const today = new Date();
-            const currentWeekStart = new Date(today);
-            currentWeekStart.setDate(today.getDate() - today.getDay());
-            
-            habitsList.innerHTML = habits.map(habit => {
-                const weekDays = [];
-                for (let i = 0; i < 7; i++) {
-                    const date = new Date(currentWeekStart);
-                    date.setDate(currentWeekStart.getDate() + i);
-                    const dateStr = date.toISOString().split('T')[0];
-                    weekDays.push({
-                        date: dateStr,
-                        day: date.toLocaleDateString('en-US', { weekday: 'short' }),
-                        completed: habit.completedDays[dateStr] || false
-                    });
-                }
-                
-                return `
-                    <div class="habit-item">
-                        <div class="habit-name">${habit.name}</div>
-                        <div class="habit-days">
-                            ${weekDays.map(day => `
-                                <div class="habit-day ${day.completed ? 'completed' : ''}" 
-                                     onclick="toggleHabit(${habit.id}, '${day.date}')"
-                                     title="${day.day}">
-                                    ${day.day.charAt(0)}
-                                </div>
-                            `).join('')}
-                        </div>
-                        <button class="btn btn-small btn-danger" style="margin-top: 10px;" 
-                                onclick="deleteHabit(${habit.id})">Delete Habit</button>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function toggleHabit(habitId, dateStr) {
-            const habit = habits.find(h => h.id === habitId);
-            if (habit) {
-                habit.completedDays[dateStr] = !habit.completedDays[dateStr];
-                localStorage.setItem('habits', JSON.stringify(habits));
-                displayHabits();
-            }
-        }
-
-        function deleteHabit(habitId) {
-            if (confirm('Are you sure you want to delete this habit?')) {
-                habits = habits.filter(h => h.id !== habitId);
-                localStorage.setItem('habits', JSON.stringify(habits));
-                displayHabits();
-            }
-        }
-
-        // Notes Functions
-        function saveNotes() {
-            const notesContent = document.getElementById('notesArea').value;
-            localStorage.setItem('notes', notesContent);
-            notes = notesContent;
-            alert('Notes saved successfully!');
-        }
-
-        // Dashboard Functions
-        function updateDashboard() {
-            // Update stats
-            const totalTasks = tasks.length;
-            const completedTasks = tasks.filter(t => t.completed).length;
-            
-            const currentMonth = new Date().getMonth();
-            const currentYear = new Date().getFullYear();
-            
-            const monthlyIncome = income
-                .filter(i => new Date(i.date).getMonth() === currentMonth && new Date(i.date).getFullYear() === currentYear)
-                .reduce((sum, i) => sum + i.amount, 0);
-                
-            const monthlyExpenses = expenses
-                .filter(e => new Date(e.date).getMonth() === currentMonth && new Date(e.date).getFullYear() === currentYear)
-                .reduce((sum, e) => sum + e.amount, 0);
-            
-            document.getElementById('totalTasks').textContent = totalTasks;
-            document.getElementById('completedTasks').textContent = completedTasks;
-            document.getElementById('monthlyIncome').textContent = `${monthlyIncome.toFixed(2)}`;
-            document.getElementById('monthlyExpenses').textContent = `${monthlyExpenses.toFixed(2)}`;
-            
-            // Update today's tasks
-            const today = new Date().toISOString().split('T')[0];
-            const todayTasks = tasks.filter(task => task.dueDate === today && !task.completed);
-            
-            const todayTasksElement = document.getElementById('todayTasks');
-            if (todayTasks.length === 0) {
-                todayTasksElement.innerHTML = 'No tasks for today';
-            } else {
-                todayTasksElement.innerHTML = todayTasks.map(task => 
-                    `<div class="quick-task priority-${task.priority}">${task.title}</div>`
-                ).join('');
-            }
-            
-            // Update upcoming deadlines
-            const upcomingTasks = tasks
-                .filter(task => !task.completed && task.dueDate && new Date(task.dueDate) > new Date())
-                .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
-                .slice(0, 5);
-                
-            const upcomingElement = document.getElementById('upcomingDeadlines');
-            if (upcomingTasks.length === 0) {
-                upcomingElement.innerHTML = 'No upcoming deadlines';
-            } else {
-                upcomingElement.innerHTML = upcomingTasks.map(task => 
-                    `<div class="quick-task priority-${task.priority}">
-                        ${task.title} - ${new Date(task.dueDate).toLocaleDateString()}
-                    </div>`
-                ).join('');
-            }
-        }
-    </script>
-</body>
+  </body>
 </html>
