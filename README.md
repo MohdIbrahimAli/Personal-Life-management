@@ -1,7 +1,9 @@
-🧠 Personal Life Management App
+# 🧠 Personal Life Management App
+
 A simple web-based application designed to help individuals manage and organize their personal lives more effectively. The project focuses on improving productivity, goal tracking, and day-to-day planning.
 
-📌 Features
+## 📌 Features
+
 ✅ Task and To-Do Management
 📅 Calendar/Schedule Integration
 📝 Notes and Journaling
@@ -9,15 +11,24 @@ A simple web-based application designed to help individuals manage and organize 
 📊 Dashboard with Overview
 🔐 Secure Local Storage (Optional enhancements: authentication)
 🌙 Light/Dark Mode (Planned)
-🚀 Technologies Used
+
+## 🚀 Technologies Used
+
 HTML5
 CSS3
 JavaScript (Vanilla or Framework - specify if React/Angular/etc.)
 (Optional: add libraries/frameworks if used, like Bootstrap, jQuery, etc.)
-📂 Project Structure
-Personal-Life-management/ ├── index.html ├── style.css ├── script.js └── README.md
 
-🛠️ Getting Started
+## 📂 Project Structure
+
+Personal-Life-management/
+├── index.html
+├── style.css
+├── script.js
+└── README.md
+
+## 🛠️ Getting Started
+
 To run this project locally:
 
 Clone the repository:
