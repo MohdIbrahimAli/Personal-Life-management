@@ -16,8 +16,7 @@ A simple web-based application designed to help individuals manage and organize 
 
 HTML5
 CSS3
-JavaScript (Vanilla or Framework - specify if React/Angular/etc.)
-(Optional: add libraries/frameworks if used, like Bootstrap, jQuery, etc.)
+JavaScript
 
 ## 📂 Project Structure
 
