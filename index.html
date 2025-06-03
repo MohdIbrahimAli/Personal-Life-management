@@ -7,21 +7,98 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="container">
+    <!-- Authentication Container -->
+    <div class="auth-container" id="authContainer">
+      <div class="auth-card">
+        <h2 id="authTitle">Welcome Back</h2>
+        <div id="authMessage"></div>
+
+        <form class="auth-form" id="authForm">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" required autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              required
+              autocomplete="current-password"
+            />
+          </div>
+          <button type="submit" class="btn" id="authSubmitBtn">Sign In</button>
+        </form>
+
+        <div class="auth-toggle">
+          <span id="authToggleText">Don't have an account?</span>
+          <button type="button" id="authToggleBtn">Sign Up</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Container -->
+    <div class="container dashboard-container" id="dashboardContainer">
       <div class="header">
         <h1>Personal Life Dashboard</h1>
         <p>Manage your tasks, time, and finances</p>
+        <div class="user-info">
+          <span>Welcome, <span id="userEmail"></span></span>
+          <button class="logout-btn" id="logoutBtn">Logout</button>
+          <button
+            class="btn btn-small"
+            id="exportBtn"
+            style="margin-left: 10px"
+            onclick="exportToExcel()"
+          >
+            Export to Excel
+          </button>
+        </div>
       </div>
 
       <nav class="nav">
-        <button onclick="showSection('dashboard')" class="active">
+        <button
+          class="nav-btn active"
+          data-section="dashboard"
+          onclick="showSection('dashboard')"
+        >
           Dashboard
         </button>
-        <button onclick="showSection('tasks')">Tasks</button>
-        <button onclick="showSection('time')">Time</button>
-        <button onclick="showSection('money')">Money</button>
-        <button onclick="showSection('habits')">Habits</button>
-        <button onclick="showSection('notes')">Notes</button>
+        <button
+          class="nav-btn"
+          data-section="tasks"
+          onclick="showSection('tasks')"
+        >
+          Tasks
+        </button>
+        <button
+          class="nav-btn"
+          data-section="time"
+          onclick="showSection('time')"
+        >
+          Time
+        </button>
+        <button
+          class="nav-btn"
+          data-section="money"
+          onclick="showSection('money')"
+        >
+          Money
+        </button>
+        <button
+          class="nav-btn"
+          data-section="habits"
+          onclick="showSection('habits')"
+        >
+          Habits
+        </button>
+        <button
+          class="nav-btn"
+          data-section="notes"
+          onclick="showSection('notes')"
+        >
+          Notes
+        </button>
       </nav>
 
       <!-- Dashboard Section -->
@@ -58,7 +135,11 @@
           <div class="dashboard-card">
             <h3>Quick Pomodoro</h3>
             <div class="timer-display" id="dashboardTimer">25:00</div>
-            <button class="btn btn-small" onclick="startQuickPomodoro()">
+            <button
+              class="btn btn-small"
+              id="quickPomodoroBtn"
+              onclick="startQuickPomodoro()"
+            >
               Start 25min Focus
             </button>
           </div>
@@ -68,17 +149,15 @@
       <!-- Tasks Section -->
       <div id="tasks" class="section">
         <h2>Task Management</h2>
-
         <div class="form-group">
-          <label>Add New Task</label>
+          <label for="taskTitle">Add New Task</label>
           <input type="text" id="taskTitle" placeholder="Task description" />
         </div>
-
         <div
           style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px"
         >
           <div class="form-group" style="flex: 1; min-width: 200px">
-            <label>Priority</label>
+            <label for="taskPriority">Priority</label>
             <select id="taskPriority">
               <option value="low">Low</option>
               <option value="medium" selected>Medium</option>
@@ -86,7 +165,7 @@
             </select>
           </div>
           <div class="form-group" style="flex: 1; min-width: 200px">
-            <label>Category</label>
+            <label for="taskCategory">Category</label>
             <select id="taskCategory">
               <option value="personal">Personal</option>
               <option value="work">Work</option>
@@ -96,15 +175,16 @@
             </select>
           </div>
           <div class="form-group" style="flex: 1; min-width: 200px">
-            <label>Due Date</label>
+            <label for="taskDueDate">Due Date</label>
             <input type="date" id="taskDueDate" />
           </div>
         </div>
-
-        <button class="btn" onclick="addTask()">Add Task</button>
+        <button class="btn" id="addTaskBtn" onclick="addTask()">
+          Add Task
+        </button>
 
         <div class="filter-section">
-          <label>Filter by:</label>
+          <label for="filterCategory">Filter by:</label>
           <select id="filterCategory" onchange="filterTasks()">
             <option value="all">All Categories</option>
             <option value="personal">Personal</option>
@@ -113,82 +193,47 @@
             <option value="errands">Errands</option>
             <option value="groceries">Groceries</option>
           </select>
-          <select id="filterPriority" onchange="filterTasks()">
-            <option value="all">All Priorities</option>
-            <option value="high">High Priority</option>
-            <option value="medium">Medium Priority</option>
-            <option value="low">Low Priority</option>
-          </select>
-          <select id="filterStatus" onchange="filterTasks()">
-            <option value="all">All Tasks</option>
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-          </select>
         </div>
-
         <div id="tasksList"></div>
       </div>
 
       <!-- Time Management Section -->
       <div id="time" class="section">
         <h2>Time Management</h2>
-
-        <div class="pomodoro-timer">
+        <div
+          style="
+            text-align: center;
+            background: #f7fafc;
+            padding: 30px;
+            border-radius: 15px;
+          "
+        >
           <h3>Pomodoro Timer</h3>
           <div class="timer-display" id="pomodoroDisplay">25:00</div>
-          <div class="timer-controls">
-            <button class="btn" onclick="startPomodoro()">Start</button>
-            <button class="btn" onclick="pausePomodoro()">Pause</button>
-            <button class="btn" onclick="resetPomodoro()">Reset</button>
-            <button class="btn btn-small" onclick="setWorkTimer()">
-              Work (25min)
-            </button>
-            <button class="btn btn-small" onclick="setBreakTimer()">
-              Break (5min)
-            </button>
-          </div>
-        </div>
-
-        <div style="margin-top: 30px">
-          <h3>Simple Calendar</h3>
-          <div style="text-align: center; margin-bottom: 20px">
-            <button class="btn btn-small" onclick="previousMonth()">
-              &lt; Previous
-            </button>
-            <span
-              id="currentMonth"
-              style="margin: 0 20px; font-weight: bold"
-            ></span>
-            <button class="btn btn-small" onclick="nextMonth()">
-              Next &gt;
-            </button>
-          </div>
           <div
             style="
-              display: grid;
-              grid-template-columns: repeat(7, 1fr);
-              gap: 5px;
-              margin-bottom: 10px;
-              font-weight: bold;
-              text-align: center;
+              display: flex;
+              justify-content: center;
+              gap: 15px;
+              flex-wrap: wrap;
             "
           >
-            <div>Sun</div>
-            <div>Mon</div>
-            <div>Tue</div>
-            <div>Wed</div>
-            <div>Thu</div>
-            <div>Fri</div>
-            <div>Sat</div>
+            <button class="btn" id="startPomodoroBtn" onclick="startPomodoro()">
+              Start
+            </button>
+            <button class="btn" id="pausePomodoroBtn" onclick="pausePomodoro()">
+              Pause
+            </button>
+            <button class="btn" id="resetPomodoroBtn" onclick="resetPomodoro()">
+              Reset
+            </button>
           </div>
-          <div class="calendar-grid" id="calendarGrid"></div>
         </div>
       </div>
 
       <!-- Money Management Section -->
       <div id="money" class="section">
         <h2>Money Management</h2>
-
         <div
           style="
             display: grid;
@@ -196,11 +241,10 @@
             gap: 30px;
           "
         >
-          <!-- Income Section -->
           <div>
             <h3>Add Income</h3>
             <div class="form-group">
-              <label>Source</label>
+              <label for="incomeSource">Source</label>
               <input
                 type="text"
                 id="incomeSource"
@@ -208,7 +252,7 @@
               />
             </div>
             <div class="form-group">
-              <label>Amount</label>
+              <label for="incomeAmount">Amount</label>
               <input
                 type="number"
                 id="incomeAmount"
@@ -217,19 +261,19 @@
               />
             </div>
             <div class="form-group">
-              <label>Date</label>
+              <label for="incomeDate">Date</label>
               <input type="date" id="incomeDate" />
             </div>
-            <button class="btn" onclick="addIncome()">Add Income</button>
-
+            <button class="btn" id="addIncomeBtn" onclick="addIncome()">
+              Add Income
+            </button>
             <div id="incomeList" style="margin-top: 20px"></div>
           </div>
 
-          <!-- Expense Section -->
           <div>
             <h3>Add Expense</h3>
             <div class="form-group">
-              <label>Description</label>
+              <label for="expenseDescription">Description</label>
               <input
                 type="text"
                 id="expenseDescription"
@@ -237,7 +281,7 @@
               />
             </div>
             <div class="form-group">
-              <label>Amount</label>
+              <label for="expenseAmount">Amount</label>
               <input
                 type="number"
                 id="expenseAmount"
@@ -246,73 +290,61 @@
               />
             </div>
             <div class="form-group">
-              <label>Category</label>
+              <label for="expenseCategory">Category</label>
               <select id="expenseCategory">
-                <option value="rent">Rent/Mortgage</option>
-                <option value="utilities">Utilities</option>
                 <option value="groceries">Groceries</option>
                 <option value="transport">Transport</option>
                 <option value="entertainment">Entertainment</option>
-                <option value="healthcare">Healthcare</option>
-                <option value="education">Education</option>
-                <option value="personal">Personal Care</option>
-                <option value="subscriptions">Subscriptions</option>
                 <option value="other">Other</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Date</label>
+              <label for="expenseDate">Date</label>
               <input type="date" id="expenseDate" />
             </div>
-            <button class="btn" onclick="addExpense()">Add Expense</button>
-
+            <button class="btn" id="addExpenseBtn" onclick="addExpense()">
+              Add Expense
+            </button>
             <div id="expenseList" style="margin-top: 20px"></div>
           </div>
-        </div>
-
-        <!-- Budget Section -->
-        <div style="margin-top: 40px">
-          <h3>Monthly Budget</h3>
-          <div id="budgetOverview"></div>
         </div>
       </div>
 
       <!-- Habits Section -->
       <div id="habits" class="section">
         <h2>Habit Tracker</h2>
-
         <div class="form-group">
-          <label>Add New Habit</label>
+          <label for="habitName">Add New Habit</label>
           <input
             type="text"
             id="habitName"
             placeholder="e.g., Exercise, Read, Meditate"
           />
         </div>
-        <button class="btn" onclick="addHabit()">Add Habit</button>
-
-        <div class="habit-tracker" id="habitsList"></div>
+        <button class="btn" id="addHabitBtn" onclick="addHabit()">
+          Add Habit
+        </button>
+        <div id="habitsList"></div>
       </div>
 
       <!-- Notes Section -->
       <div id="notes" class="section">
         <h2>Quick Notes</h2>
-
         <div class="form-group">
-          <label>Your Notes</label>
+          <label for="notesArea">Your Notes</label>
           <textarea
             id="notesArea"
-            class="notes-area"
+            style="min-height: 200px; resize: vertical"
             placeholder="Jot down your thoughts, ideas, or reminders..."
           ></textarea>
         </div>
-        <button class="btn" onclick="saveNotes()">Save Notes</button>
+        <button class="btn" id="saveNotesBtn" onclick="saveNotes()">
+          Save Notes
+        </button>
       </div>
     </div>
 
-    <footer class="footer">
-      <p>&copy; 2023 Personal Life Dashboard</p>
-    <script src="script.js" defer></script>
-
+    <!-- Load Scripts -->
+    <script type="module" src="script.js"></script>
   </body>
 </html>

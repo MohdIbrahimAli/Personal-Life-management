@@ -9,15 +9,15 @@ A simple web-based application designed to help individuals manage and organize 
 📝 Notes and Journaling
 🎯 Goal Setting and Progress Tracking
 📊 Dashboard with Overview
-🔐 Secure Local Storage (Optional enhancements: authentication)
+🔐 Secure Local Storage
 🌙 Light/Dark Mode (Planned)
 
 ## 🚀 Technologies Used
 
 HTML5
 CSS3
-JavaScript (Vanilla or Framework - specify if React/Angular/etc.)
-(Optional: add libraries/frameworks if used, like Bootstrap, jQuery, etc.)
+JavaScript
+Firebase
 
 ## 📂 Project Structure
 
@@ -25,7 +25,8 @@ Personal-Life-management/
 ├── index.html
 ├── style.css
 ├── script.js
-└── README.md
+├── README.md
+├── Firebase.js
 
 ## 🛠️ Getting Started
 

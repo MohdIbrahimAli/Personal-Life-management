@@ -1,0 +1,21 @@
+// firebase.js
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getDatabase } from 'firebase/database';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAR5PUXrKhyDepK9UTVX8HGTELmbAomW0Y",
+  authDomain: "personallifemanagement-148f7.firebaseapp.com",
+  databaseURL: "https://personallifemanagement-148f7-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "personallifemanagement-148f7",
+  storageBucket: "personallifemanagement-148f7.firebasestorage.app",
+  messagingSenderId: "244653313777",
+  appId: "1:244653313777:web:d1fe18e1da3dc91f89e350",
+  measurementId: "G-E57L0MBKR8"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const database = getDatabase(app);
+
+export { auth, database };
