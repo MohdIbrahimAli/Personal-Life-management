@@ -120,6 +120,15 @@ body {
     text-align: center;
 }
 
+.info-message {
+    background: #bee3f8;
+    color: #2b6cb0;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
 /* Dashboard styles */
 .dashboard-container {
     display: none;
@@ -267,8 +276,28 @@ body {
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
+.btn-success {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+.btn-success:hover {
+    box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+}
+
+.btn-warning:hover {
+    box-shadow: 0 5px 15px rgba(237, 137, 54, 0.4);
+}
+
 .btn-danger {
     background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+}
+
+.btn-danger:hover {
+    box-shadow: 0 5px 15px rgba(245, 101, 101, 0.4);
 }
 
 .btn-small {
@@ -276,7 +305,8 @@ body {
     font-size: 0.8rem;
 }
 
-.task-item, .expense-item, .income-item {
+/* Task-specific styles */
+.task-item, .expense-item, .income-item, .habit-item {
     background: #f7fafc;
     border: 2px solid #e2e8f0;
     border-radius: 10px;
@@ -285,15 +315,16 @@ body {
     transition: all 0.3s ease;
 }
 
-.task-item:hover, .expense-item:hover, .income-item:hover {
+.task-item:hover, .expense-item:hover, .income-item:hover, .habit-item:hover {
     border-color: #667eea;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 .task-item.completed {
-    opacity: 0.6;
-    text-decoration: line-through;
+    opacity: 0.7;
+    background: #f0fff4;
+    border-color: #9ae6b4;
 }
 
 .task-item.overdue {
@@ -316,26 +347,170 @@ body {
 .task-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.task-checkbox-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.task-checkbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #667eea;
 }
 
 .task-title {
     font-weight: 600;
     font-size: 1.1rem;
     color: #2d3748;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.task-title.completed-text {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+.task-completion-status {
+    display: flex;
+    align-items: center;
+}
+
+.completion-badge {
+    background: #c6f6d5;
+    color: #2f855a;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
 }
 
 .task-meta {
     font-size: 0.9rem;
     color: #718096;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.category-badge {
+    background: #e2e8f0;
+    color: #4a5568;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.priority-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.priority-badge.priority-high {
+    background: #fed7d7;
+    color: #c53030;
+}
+
+.priority-badge.priority-medium {
+    background: #feebc8;
+    color: #c05621;
+}
+
+.priority-badge.priority-low {
+    background: #c6f6d5;
+    color: #2f855a;
+}
+
+.due-date {
+    font-weight: 500;
+}
+
+.completed-date {
+    color: #38a169;
+    font-weight: 500;
 }
 
 .task-actions {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+/* Empty state styles */
+.empty-state {
+    text-align: center;
+    color: #718096;
+    font-style: italic;
+    padding: 40px 20px;
+    background: #f7fafc;
+    border-radius: 10px;
+    border: 2px dashed #e2e8f0;
+}
+
+/* Income and expense specific styles */
+.income-header, .expense-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.amount {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #38a169;
+}
+
+.expense-amount {
+    color: #e53e3e;
+}
+
+.income-date, .expense-date {
+    font-size: 0.9rem;
+    color: #718096;
+    margin-bottom: 10px;
+}
+
+.expense-meta {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* Habit specific styles */
+.habit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.habit-streak {
+    font-size: 0.9rem;
+    color: #718096;
+}
+
+.habit-actions {
+    display: flex;
+    gap: 10px;
 }
 
 .filter-section {
@@ -368,6 +543,11 @@ body {
     margin-bottom: 5px;
 }
 
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
 .timer-display {
     font-size: 3rem;
     font-weight: bold;
@@ -387,6 +567,12 @@ body {
     border: 2px solid #e2e8f0;
     border-radius: 15px;
     padding: 20px;
+}
+
+.dashboard-card h3 {
+    color: #4a5568;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
 }
 
 .quick-task {
@@ -429,5 +615,30 @@ body {
     
     .dashboard-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .task-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .task-checkbox-title {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .task-meta {
+        flex-direction: column;
+        gap: 5px;
+        align-items: flex-start;
+    }
+    
+    .task-actions {
+        width: 100%;
+    }
+    
+    .btn-small {
+        flex: 1;
+        min-width: 120px;
     }
 }

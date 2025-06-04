@@ -15,7 +15,8 @@ import {
   set, 
   onValue, 
   push, 
-  remove
+  remove,
+  update
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js';
 
 // Updated Firebase configuration - You'll need to replace these with your actual config
@@ -456,17 +457,20 @@ async function saveToFirebase(type, data) {
     console.error('User not authenticated or database not initialized');
     return;
   }
-  
+
   try {
     const newRef = push(ref(database, `users/${currentUser.uid}/${type}`));
-    await set(newRef, data);
-    console.log(`${type} saved successfully`);
+    const newId = newRef.key;
+
+    const dataWithId = { id: newId, ...data };
+
+    await set(newRef, dataWithId);
+    console.log(`${type} saved successfully with ID: ${newId}`);
   } catch (error) {
     console.error(`Error saving ${type}:`, error);
     alert(`Failed to save ${type}. Please try again.`);
   }
 }
-
 async function updateFirebase(type, data) {
   if (!currentUser || !database) {
     console.error('User not authenticated or database not initialized');
@@ -478,6 +482,22 @@ async function updateFirebase(type, data) {
     console.log(`${type} updated successfully`);
   } catch (error) {
     console.error(`Error updating ${type}:`, error);
+  }
+}
+
+// NEW: Function to update specific task in Firebase
+async function updateTaskInFirebase(taskId, updates) {
+  if (!currentUser || !database) {
+    console.error('User not authenticated or database not initialized');
+    return;
+  }
+  
+  try {
+    await update(ref(database, `users/${currentUser.uid}/tasks/${taskId}`), updates);
+    console.log('Task updated successfully');
+  } catch (error) {
+    console.error('Error updating task:', error);
+    alert('Failed to update task. Please try again.');
   }
 }
 
@@ -494,15 +514,40 @@ function renderTasks() {
     return;
   }
 
-  container.innerHTML = filteredTasks.map(t => `
-    <div class="task-item priority-${t.priority} ${isOverdue(t.dueDate) ? 'overdue' : ''}">
-      <div class="task-title">${escapeHtml(t.title)}</div>
+  // Sort tasks: incomplete first, then by due date
+  const sortedTasks = filteredTasks.sort((a, b) => {
+    if (a.completed !== b.completed) {
+      return a.completed ? 1 : -1; // Incomplete tasks first
+    }
+    return new Date(a.dueDate) - new Date(b.dueDate);
+  });
+
+  container.innerHTML = sortedTasks.map(t => `
+    <div class="task-item priority-${t.priority} ${t.completed ? 'completed' : ''} ${isOverdue(t.dueDate) && !t.completed ? 'overdue' : ''}">
+      <div class="task-header">
+        <div class="task-checkbox-title">
+          <input 
+            type="checkbox" 
+            id="task-${t.id}" 
+            ${t.completed ? 'checked' : ''} 
+            onchange="toggleTaskCompletion('${t.id}')"
+            class="task-checkbox"
+          />
+          <label for="task-${t.id}" class="task-title ${t.completed ? 'completed-text' : ''}">${escapeHtml(t.title)}</label>
+        </div>
+        <div class="task-completion-status">
+          ${t.completed ? '<span class="completion-badge">✅ Completed</span>' : ''}
+        </div>
+      </div>
       <div class="task-meta">
         <span class="category-badge">${t.category}</span>
         <span class="due-date">Due: ${formatDate(t.dueDate)}</span>
         <span class="priority-badge priority-${t.priority}">${t.priority}</span>
+        ${t.completedAt ? `<span class="completed-date">Completed: ${formatDate(t.completedAt.split('T')[0])}</span>` : ''}
       </div>
       <div class="task-actions">
+        ${!t.completed ? `<button class="btn btn-small btn-success" onclick="toggleTaskCompletion('${t.id}')">Mark Complete</button>` : ''}
+        ${t.completed ? `<button class="btn btn-small btn-warning" onclick="toggleTaskCompletion('${t.id}')">Mark Incomplete</button>` : ''}
         <button class="btn btn-small btn-danger" onclick="deleteFromFirebase('tasks', '${t.id}')">Delete</button>
       </div>
     </div>
@@ -511,17 +556,39 @@ function renderTasks() {
   updateDashboardTasks();
 }
 
+// NEW: Function to toggle task completion
+window.toggleTaskCompletion = async function(taskId) {
+  const task = state.tasks.find(t => t.id === taskId);
+  if (!task) return;
+  
+  const updates = {
+    completed: !task.completed,
+    completedAt: !task.completed ? new Date().toISOString() : null
+  };
+  
+  // Update local state immediately for responsiveness
+  task.completed = updates.completed;
+  task.completedAt = updates.completedAt;
+  
+  // Re-render to show immediate changes
+  renderTasks();
+  renderDashboard();
+  
+  // Update Firebase
+  await updateTaskInFirebase(taskId, updates);
+};
+
 function updateDashboardTasks() {
-  // Update dashboard today's tasks
+  // Update dashboard today's tasks (only incomplete ones)
   const todayTasks = getEl('todayTasks');
   if (todayTasks) {
-    const todaysTaskList = state.tasks.filter(t => t.dueDate === today());
+    const todaysTaskList = state.tasks.filter(t => t.dueDate === today() && !t.completed);
     todayTasks.innerHTML = todaysTaskList.length > 0 
       ? todaysTaskList.map(t => `<div class="quick-task">${escapeHtml(t.title)}</div>`).join('')
-      : '<div class="empty-state">No tasks for today</div>';
+      : '<div class="empty-state">No pending tasks for today</div>';
   }
 
-  // Update upcoming deadlines
+  // Update upcoming deadlines (only incomplete tasks)
   const upcomingDeadlines = getEl('upcomingDeadlines');
   if (upcomingDeadlines) {
     const upcoming = state.tasks
@@ -529,7 +596,7 @@ function updateDashboardTasks() {
         const taskDate = new Date(t.dueDate);
         const now = new Date();
         const weekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-        return taskDate > now && taskDate <= weekFromNow;
+        return taskDate > now && taskDate <= weekFromNow && !t.completed;
       })
       .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
     
@@ -663,6 +730,7 @@ window.addTask = function() {
     category: categoryEl?.value || 'personal',
     dueDate: dueDateEl?.value || today(),
     completed: false,
+    completedAt: null,
     createdAt: new Date().toISOString()
   };
   
