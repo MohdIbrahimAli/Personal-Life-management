@@ -17,7 +17,10 @@ A simple web-based application designed to help individuals manage and organize 
 HTML5
 CSS3
 JavaScript
+<<<<<<< HEAD
 Firebase
+=======
+>>>>>>> f8157267da3f1441486c71f5e2a1de6b6d047eeb
 
 ## 📂 Project Structure
 
