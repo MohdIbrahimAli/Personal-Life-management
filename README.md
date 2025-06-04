@@ -17,10 +17,7 @@ A simple web-based application designed to help individuals manage and organize 
 HTML5
 CSS3
 JavaScript
-<<<<<<< HEAD
 Firebase
-=======
->>>>>>> f8157267da3f1441486c71f5e2a1de6b6d047eeb
 
 ## 📂 Project Structure
 
@@ -43,11 +40,8 @@ cd Personal-Life-management Open index.html in your browser:
 
 You can double-click it, or run:
 
-start index.html 📈 Future Improvements Add user authentication
+start index.html 
 
-Sync with cloud storage (e.g., Firebase)
-
-Enable recurring tasks
 
 Integrate reminders/notifications
 
@@ -58,5 +52,6 @@ Mobile responsiveness
 📄 License This project is open-source and available under the MIT License.
 
 Live Demo
+https://mohdibrahimali.github.io/Personal-Life-management/
 
 🙋‍♂️ Author Mohd Ibrahim Ali GitHub Profile
